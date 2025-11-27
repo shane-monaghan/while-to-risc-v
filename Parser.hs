@@ -14,3 +14,8 @@ data Expression =
     OrExp Expression Expression |
     EqualsEqualsExp Expression Expression
 
+data Statement = 
+    Assignment String Expression |
+    While Expression Statement |
+    If Expression Statement Statement |
+    Block [Statement] 
