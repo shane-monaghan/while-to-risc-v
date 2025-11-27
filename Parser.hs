@@ -1,5 +1,7 @@
 module Parser where
 
+import Tokenizer (Token)
+
 data Expression =
     NumberExp Int |
     VariableExp String |
@@ -18,4 +20,9 @@ data Statement =
     Assignment String Expression |
     While Expression Statement |
     If Expression Statement Statement |
-    Block [Statement] 
+    Block [Statement]
+
+expect :: Token -> [Token] -> [Token]
+expect expectedToken (actualToken : restOfTokens)
+    | expectedToken == actualToken = restOfTokens
+    | otherwise = error ("Expected " ++ show expectedToken ++ " but got " ++ show actualToken)
