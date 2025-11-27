@@ -1,0 +1,20 @@
+data Token = 
+    If String |
+    Else String |
+    While String |
+    Variable String |
+    EqualsEquals String |
+    LessThan String |
+    Not String |
+    And String |
+    Or String |
+    LeftParenthesis String |
+    RightParenthesis String |
+    LeftBrace String |
+    RightBrace String |
+    Semicolon String |
+    AdditionOp String |
+    SubtractionOp String |
+    MultiplicationOp String |
+    DivisionOp String |
+    Number Int
