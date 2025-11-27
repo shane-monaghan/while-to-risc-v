@@ -1,11 +1,10 @@
 module Parser where
 
-import Tokenizer (Token)
+import Tokenizer (Token(..))
 
 data Expression =
     NumberExp Int |
     VariableExp String |
-    BooleanExp Bool |
     AddExp Expression Expression |
     SubtractExp Expression Expression |
     MultiplyExp Expression Expression |
@@ -26,3 +25,7 @@ expect :: Token -> [Token] -> [Token]
 expect expectedToken (actualToken : restOfTokens)
     | expectedToken == actualToken = restOfTokens
     | otherwise = error ("Expected " ++ show expectedToken ++ " but got " ++ show actualToken)
+
+parseAtom :: [Token] -> (Expression, [Token])
+parseAtom (Number x : restOfTokens) = (NumberExp x, restOfTokens)
+parseAtom (Variable s : restOfTokens) = (VariableExp s, restOfTokens)
