@@ -1,3 +1,5 @@
+module Tokenizer where
+
 import Data.Char (isDigit, isAlpha, isAlphaNum, isSpace)
 
 data Token = 
@@ -21,8 +23,10 @@ data Token =
     MultiplicationOp | -- '*'
     DivisionOp | -- '/'
     Number Int -- e.g., 123, 5865, 9023 
+    deriving (Show, Eq)
 
 tokenize :: String -> [Token]
+tokenize [] = []
 tokenize ('+' : restOfString) = AdditionOp : tokenize restOfString
 tokenize ('-' : restOfString) = SubtractionOp : tokenize restOfString
 tokenize ('*' : restOfString) = MultiplicationOp : tokenize restOfString
