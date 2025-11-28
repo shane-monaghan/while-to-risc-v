@@ -79,3 +79,35 @@ parseMath tokens =
         parseMathHelper lhs tokens =
             (lhs, tokens)
 
+parseExpression :: [Token] -> (Expression , [Token])
+parseExpression tokens =
+    let
+        (leftHandSide, remainingTokens) = parseMath tokens
+    in
+        parseExpressionHelper leftHandSide remainingTokens
+    where
+        parseExpressionHelper :: Expression -> [Token] -> (Expression, [Token])
+        parseExpressionHelper lhs (EqualsEquals : restOfTokens) =
+            let
+                (rightHandSide, remainingTokens) = parseMath restOfTokens
+            in
+                parseExpressionHelper (EqualsEqualsExp lhs rightHandSide) remainingTokens
+        parseExpressionHelper lhs (LessThan : restOfTokens) = 
+            let
+                (rightHandSide, remainingTokens) = parseMath restOfTokens
+            in
+                parseExpressionHelper (LessThanExp lhs rightHandSide) remainingTokens
+        parseExpressionHelper lhs tokens =
+            (lhs, tokens)
+
+parseAssignment :: [Token] -> (Statement, [Token])
+parseAssignment (Variable varName : Equals : restOfTokens) =
+    let
+        (expressionNode, tokensAfterExpression) = parseExpression restOfTokens
+        finalTokens = expect Semicolon tokensAfterExpression
+    in
+        (Assignment varName expressionNode, finalTokens)
+parseAssignment tokens =
+    error "Syntax does not align with an assignment"
+
+
