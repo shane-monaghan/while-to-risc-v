@@ -16,10 +16,10 @@ data Expression =
     EqualsEqualsExp Expression Expression
 
 data Statement = 
-    Assignment String Expression |
-    While Expression Statement |
-    If Expression Statement Statement |
-    Block [Statement]
+    AssignmentStmt String Expression |
+    WhileStmt Expression Statement |
+    IfStmt Expression Statement Statement |
+    BlockStmt [Statement]
 
 expect :: Token -> [Token] -> [Token]
 expect expectedToken (actualToken : restOfTokens)
@@ -100,13 +100,20 @@ parseExpression tokens =
         parseExpressionHelper lhs tokens =
             (lhs, tokens)
 
+parseStatement :: [Token] -> (Statement, [Token])
+parseStatement (If : restOfTokens) = parseIf restOfTokens
+parseStatement (While : restOfTokens) = parseWhile restOfTokens
+parseStatement (LeftBrace : restOfTokens) = parseBlock restOfTokens
+parseStatement (Variable varName : restOfTokens) = parseAssignment (Variable varName : restOfTokens)
+parseStatement tokens = error "Illegal program"
+
 parseAssignment :: [Token] -> (Statement, [Token])
 parseAssignment (Variable varName : Equals : restOfTokens) =
     let
         (expressionNode, tokensAfterExpression) = parseExpression restOfTokens
         finalTokens = expect Semicolon tokensAfterExpression
     in
-        (Assignment varName expressionNode, finalTokens)
+        (AssignmentStmt varName expressionNode, finalTokens)
 parseAssignment tokens =
     error "Syntax does not align with an assignment"
 
