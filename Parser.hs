@@ -110,6 +110,7 @@ parseStatement tokens = error "Illegal program"
 parseAssignment :: [Token] -> (Statement, [Token])
 parseAssignment (Variable varName : Equals : restOfTokens) =
     let
+
         (expressionNode, tokensAfterExpression) = parseExpression restOfTokens
         finalTokens = expect Semicolon tokensAfterExpression
     in
@@ -132,5 +133,18 @@ parseBlock tokens =
                 (otherStatements, finalTokens) = parseBlockHelper tokensAfterStatement
             in
                 (singleStatement : otherStatements, finalTokens)
-                
+
+parseIf :: [Token] -> (Statement, [Token])
+parseIf tokens =
+    let
+        tokensAfterLeftParenthesis = expect LeftParenthesis tokens 
+        (expressionNode, tokensAfterExpression) = parseExpression tokensAfterLeftParenthesis
+        tokensAfterRightParenthesis = expect RightParenthesis tokensAfterExpression
+        (ifStatement, tokensAfterIfBlock) = parseBlock tokensAfterRightParenthesis
+        (elseStatement, tokensAfterElseStatement) = 
+            case tokensAfterIfBlock of
+                (Else : tokensAfterElse) -> parseBlock tokensAfterElse
+                _ -> (BlockStmt [], tokensAfterIfBlock)
+    in
+        (IfStmt expressionNode ifStatement elseStatement, tokensAfterElseStatement)
 
