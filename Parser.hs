@@ -29,3 +29,10 @@ expect expectedToken (actualToken : restOfTokens)
 parseAtom :: [Token] -> (Expression, [Token])
 parseAtom (Number x : restOfTokens) = (NumberExp x, restOfTokens)
 parseAtom (Variable s : restOfTokens) = (VariableExp s, restOfTokens)
+parseAtom (LeftParenthesis : restOfTokens) = 
+    let 
+        (innerExp, afterInnerExp) = (parseExpression restOfTokens)
+        finalRest = expect RightParenthesis afterInnerExp
+    in
+        (innerExp, finalRest)
+parseAtom _ = error "Unexpected token"
