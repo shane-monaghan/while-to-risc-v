@@ -117,4 +117,20 @@ parseAssignment (Variable varName : Equals : restOfTokens) =
 parseAssignment tokens =
     error "Syntax does not align with an assignment"
 
+parseBlock :: [Token] -> (Statement, [Token])
+parseBlock tokens = 
+    let
+        (statements, remainingTokens) = parseBlockHelper tokens
+    in
+        (BlockStmt statements, remainingTokens)
+    where
+        parseBlockHelper :: [Token] -> ([Statement], [Token])
+        parseBlockHelper (RightBrace : restOfTokens) = ([], restOfTokens)
+        parseBlockHelper tokens =
+            let
+                (singleStatement, tokensAfterStatement) = parseStatement tokens
+                (otherStatements, finalTokens) = parseBlockHelper tokensAfterStatement
+            in
+                (singleStatement : otherStatements, finalTokens)
+                
 
