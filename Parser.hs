@@ -36,3 +36,25 @@ parseAtom (LeftParenthesis : restOfTokens) =
     in
         (innerExp, finalRest)
 parseAtom _ = error "Unexpected token"
+
+parseTerm :: [Token] -> (Expression, [Token])
+parseTerm tokens = 
+    let
+        (leftHandSide, remainingTokens) = parseAtom tokens
+    in
+        parseTermHelper leftHandSide remainingTokens
+    where 
+        parseTermHelper :: Expression -> [Token] -> (Expression, [Token])
+        parseTermHelper lhs (MultiplicationOp : restOfTokens) = 
+            let
+                (rightHandSide, remainingTokens) = parseAtom restOfTokens
+            in
+                parseTermHelper (MultiplyExp lhs rightHandSide) remainingTokens
+        parseTermHelper lhs (DivisionOp : restOfTokens) =
+            let
+                (rightHandSide, remainingTokens) = parseAtom restOfTokens
+            in
+                parseTermHelper (DivideExp lhs rightHandSide) remainingTokens
+        parseTermHelper lhs tokens =
+            (lhs, tokens)
+
