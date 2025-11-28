@@ -58,3 +58,24 @@ parseTerm tokens =
         parseTermHelper lhs tokens =
             (lhs, tokens)
 
+parseMath :: [Token] -> (Expression, [Token])
+parseMath tokens =
+    let
+        (leftHandSide, remainingTokens) = parseTerm tokens
+    in
+        parseMathHelper leftHandSide remainingTokens
+    where
+        parseMathHelper :: Expression -> [Token] -> (Expression, [Token])
+        parseMathHelper lhs (AdditionOp : restOfTokens) = 
+            let
+                (rightHandSide, remainingTokens) = parseTerm restOfTokens
+            in
+                parseMathHelper (AddExp lhs rightHandSide) remainingTokens
+        parseMathHelper lhs (SubtractionOp : restOfTokens) =
+            let
+                (rightHandSide, remainingTokens) = parseTerm restOfTokens
+            in
+                parseMathHelper (SubtractExp lhs rightHandSide) remainingTokens
+        parseMathHelper lhs tokens =
+            (lhs, tokens)
+
