@@ -148,3 +148,23 @@ parseIf tokens =
     in
         (IfStmt expressionNode ifStatement elseStatement, tokensAfterElseStatement)
 
+parseWhile :: [Token] -> (Statement, [Token])
+parseWhile tokens =
+    let
+        tokensAfterLeftParenthesis = expect LeftParenthesis tokens 
+        (expressionNode, tokensAfterExpression) = parseExpression tokensAfterLeftParenthesis
+        tokensAfterRightParenthesis = expect RightParenthesis tokensAfterExpression
+        (whileStatement, tokensAfterWhileBlock) = parseBlock tokensAfterRightParenthesis
+    in
+        (WhileStmt expressionNode whileStatement, tokensAfterWhileBlock)
+
+parseProgram :: [Token] -> [Statement]
+parseProgram [] = []
+parseProgram tokens =
+    let
+        (firstStatement, tokensAfterStatement) = parseStatement tokens
+    in
+        (firstStatement : parseProgram tokensAfterStatement)
+
+
+
