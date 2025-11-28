@@ -16,5 +16,6 @@ sampleCode = unlines
 main :: IO ()
 main = do
     let tokens = tokenize sampleCode
+    pPrint tokens
     let ast = parseProgram tokens
     pPrint ast

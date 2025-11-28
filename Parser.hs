@@ -107,12 +107,12 @@ parseStatement (If : restOfTokens) = parseIf restOfTokens
 parseStatement (While : restOfTokens) = parseWhile restOfTokens
 parseStatement (LeftBrace : restOfTokens) = parseBlock restOfTokens
 parseStatement (Variable varName : restOfTokens) = parseAssignment (Variable varName : restOfTokens)
-parseStatement tokens = error "Illegal program"
+parseStatement (t:_) = error $ "Illegal program. Stuck on token: " ++ show t
+parseStatement []    = error "Unexpected end of file"
 
 parseAssignment :: [Token] -> (Statement, [Token])
 parseAssignment (Variable varName : Equals : restOfTokens) =
     let
-
         (expressionNode, tokensAfterExpression) = parseExpression restOfTokens
         finalTokens = expect Semicolon tokensAfterExpression
     in
@@ -142,7 +142,8 @@ parseIf tokens =
         tokensAfterLeftParenthesis = expect LeftParenthesis tokens 
         (expressionNode, tokensAfterExpression) = parseExpression tokensAfterLeftParenthesis
         tokensAfterRightParenthesis = expect RightParenthesis tokensAfterExpression
-        (ifStatement, tokensAfterIfBlock) = parseBlock tokensAfterRightParenthesis
+        tokensAfterLeftBrace = expect LeftBrace tokensAfterRightParenthesis
+        (ifStatement, tokensAfterIfBlock) = parseBlock tokensAfterLeftBrace
         (elseStatement, tokensAfterElseStatement) = 
             case tokensAfterIfBlock of
                 (Else : tokensAfterElse) -> parseBlock tokensAfterElse
@@ -156,7 +157,8 @@ parseWhile tokens =
         tokensAfterLeftParenthesis = expect LeftParenthesis tokens 
         (expressionNode, tokensAfterExpression) = parseExpression tokensAfterLeftParenthesis
         tokensAfterRightParenthesis = expect RightParenthesis tokensAfterExpression
-        (whileStatement, tokensAfterWhileBlock) = parseBlock tokensAfterRightParenthesis
+        tokensAfterLeftBrace = expect LeftBrace tokensAfterRightParenthesis
+        (whileStatement, tokensAfterWhileBlock) = parseBlock tokensAfterLeftBrace
     in
         (WhileStmt expressionNode whileStatement, tokensAfterWhileBlock)
 

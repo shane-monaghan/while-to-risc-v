@@ -39,6 +39,7 @@ tokenize ('}' : restOfString) = RightBrace : tokenize restOfString
 tokenize (';' : restOfString) = Semicolon : tokenize restOfString
 tokenize ('=' : '=' : restOfString) = EqualsEquals : tokenize restOfString
 tokenize ('=' : restOfString) = Equals : tokenize restOfString
+tokenize ('\n' : restOfString) = tokenize restOfString
 
 tokenize (firstCharacter : restOfString)
     | isDigit firstCharacter = Number (read digits) : tokenize restOfInput
