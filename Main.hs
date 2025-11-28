@@ -1,6 +1,8 @@
 module Main where
 
 import Tokenizer
+import Parser
+import Text.Pretty.Simple (pPrint)
 
 sampleCode :: String
 sampleCode = unlines
@@ -14,4 +16,5 @@ sampleCode = unlines
 main :: IO ()
 main = do
     let tokens = tokenize sampleCode
-    print tokens
+    let ast = parseProgram tokens
+    pPrint ast

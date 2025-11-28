@@ -14,12 +14,14 @@ data Expression =
     AndExp Expression Expression |
     OrExp Expression Expression |
     EqualsEqualsExp Expression Expression
+    deriving (Show, Eq)
 
 data Statement = 
     AssignmentStmt String Expression |
     WhileStmt Expression Statement |
     IfStmt Expression Statement Statement |
     BlockStmt [Statement]
+    deriving (Show, Eq)
 
 expect :: Token -> [Token] -> [Token]
 expect expectedToken (actualToken : restOfTokens)
