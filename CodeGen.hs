@@ -14,3 +14,6 @@ getVariables (BlockStmt blockStatements : restOfStatements) = (getVariables bloc
 
 getUniqueVariables :: [Statement] -> Set.Set String
 getUniqueVariables listOfStatements = Set.fromList (getVariables listOfStatements)
+
+makeMemoryMap :: Set.Set String -> Map.Map String Int
+makeMemoryMap setOfVariables = Map.fromList (zip (Set.toList setOfVariables) [-4, -8..])
