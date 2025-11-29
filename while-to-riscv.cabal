@@ -1,0 +1,12 @@
+cabal-version: 3.0
+name: while-to-riscv
+version: 0.1.0.0
+author: Shane Monaghan
+
+executable while-to-riscv
+    main-is: Main.hs
+    hs-source-dirs: .
+    default-language: Haskell2010
+    build-depends: base, containers, pretty-simple
+    other-modules: Tokenizer, Parser
+
