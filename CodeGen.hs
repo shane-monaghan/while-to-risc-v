@@ -3,6 +3,7 @@ module CodeGen where
 import Parser (Expression(..), Statement(..))
 import Data.Map (Map)
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 getVariables :: [Statement] -> [String]
 getVariables [] = []
@@ -11,6 +12,5 @@ getVariables (WhileStmt exp statement : restOfStatements) = (getVariables [state
 getVariables (IfStmt exp ifBlockStatements elseBlockStatements : restOfStatements) = (getVariables [ifBlockStatements]) ++ (getVariables [elseBlockStatements]) ++ (getVariables restOfStatements)
 getVariables (BlockStmt blockStatements : restOfStatements) = (getVariables blockStatements) ++ (getVariables restOfStatements)
 
-
-
-
+getUniqueVariables :: [Statement] -> Set.Set String
+getUniqueVariables listOfStatements = Set.fromList (getVariables listOfStatements)
