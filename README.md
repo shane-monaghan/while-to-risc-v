@@ -15,7 +15,29 @@ This section will include notable resources that I use, as well as resources tha
 
 ## Sample Usage
 This section will walk through each step of a test run of the compiler.
+
+### Example Program Written in WHILE
+``` 
+x = 1;
+while (x < 10) {
+  x = x * 2;
+}
+```
 ### Tokenization
-### Syntactic Analysis
+The compiler tokenizes the example program as follows:
+```
+tokens = [
+          Variable "x", Equals, Number 1, Semicolon, -- Line 1
+          While, LeftParenthesis, Variable "x", LessThan, Number 10, RightParenthesis, LeftBrace, -- Line 2
+          Variable "x", Equals, Variable "x", MultiplicationOp, Number 2, Semicolon, -- Line 3
+          RightBrace -- Line 4
+          ]
+```
+
+### Parsing
+The result of the compiler parsing the above tokens is as follows (shown using console output for ease of viewing):
+
+![AbstractSyntaxTree](https://github.com/user-attachments/assets/750c6ed0-09f4-4b3d-baa1-6214bf1ad6cd)
+
 ### Etc.
 
