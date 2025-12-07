@@ -23,7 +23,7 @@ labelGenerator n = ("L" ++ show n, n + 1)
 
 generateExpression :: Map.Map String Int -> Expression -> Int -> ([String], Int)
 generateExpression memory (NumberExp n) label = (["li a0, " ++ show n], label)
-generateExpression memory (VariableExp x) label = (["lw a0, " ++ show (memory.Map! x) ++ "(fp)"], label)
+generateExpression memory (VariableExp x) label = (["lw a0, " ++ show (memory Map.! x) ++ "(fp)"], label)
 generateExpression memory (AddExp e1 e2) label =
     let (c1, l1) = generateExpression memory e1 label
         save1    = ["mv t0, a0"]
@@ -127,4 +127,30 @@ generateStatement memory (WhileStmt cond body) label =
          ++ ["j " ++ startLbl]
          ++ [endLbl ++ ":"]
        , l4 )
+
+generateProgram :: [Statement] -> String
+generateProgram stmts =
+    let vars      = getUniqueVariables stmts
+        mem       = makeMemoryMap vars
+        stackSize = 4 * Set.size vars   -- enough space for all variables
+        prologue =
+            [ ".globl main"
+            , "main:"
+            , "  addi sp, sp, -" ++ show stackSize
+            , "  mv fp, sp"
+            ]
+        (body, _) = foldl
+                        (\(acc, l) s ->
+                            let (c, l2) = generateStatement mem s l
+                            in (acc ++ c, l2)
+                        )
+                        ([], 0)
+                        stmts
+        epilogue =
+            [ "  li a0, 0"
+            , "  addi sp, fp, 0"
+            , "  ret"
+            ]
+    in unlines (prologue ++ body ++ epilogue)
+
 

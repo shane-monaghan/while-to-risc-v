@@ -2,6 +2,7 @@ module Main where
 
 import Tokenizer
 import Parser
+import CodeGen
 import Text.Pretty.Simple (pPrint)
 
 sampleCode :: String
@@ -19,3 +20,5 @@ main = do
     pPrint tokens
     let ast = parseProgram tokens
     pPrint ast
+    let program = generateProgram ast
+    pPrint program
