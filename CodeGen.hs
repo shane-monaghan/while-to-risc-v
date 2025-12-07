@@ -17,3 +17,70 @@ getUniqueVariables listOfStatements = Set.fromList (getVariables listOfStatement
 
 makeMemoryMap :: Set.Set String -> Map.Map String Int
 makeMemoryMap setOfVariables = Map.fromList (zip (Set.toList setOfVariables) [-4, -8..])
+
+labelGenerator :: Int -> (String, Int)
+labelGenerator n = ("L" ++ show n, n + 1)
+
+generateExpression :: Map.Map String Int -> Expression -> Int -> ([String], Int)
+generateExpression memory (NumberExp n) label = (["li a0, " ++ show n], label)
+generateExpression memory (VariableExp x) label = (["lw a0, " ++ show (memory.Map! x) ++ "(fp)"], label)
+generateExpression memory (AddExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["add a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+    
+generateExpression memory (SubtractExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["sub a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (MultiplyExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["mul a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (DivideExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["div a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (LessThanExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["slt a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (EqualsEqualsExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["sub t1, t0, a0", "seqz a0, t1"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (AndExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["and a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (OrExp e1 e2) label =
+    let (c1, l1) = generateExpression memory e1 label
+        save1    = ["mv t0, a0"]
+        (c2, l2) = generateExpression memory e2 l1
+        op       = ["or a0, t0, a0"]
+    in (c1 ++ save1 ++ c2 ++ op, l2)
+
+generateExpression memory (NotExp e) label =
+    let (c, l1) = generateExpression memory e label
+        op      = ["seqz a0, a0"]
+    in (c ++ op, l1)
