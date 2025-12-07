@@ -30,7 +30,7 @@ generateExpression memory (AddExp e1 e2) label =
         (c2, l2) = generateExpression memory e2 l1
         op       = ["add a0, t0, a0"]
     in (c1 ++ save1 ++ c2 ++ op, l2)
-    
+
 generateExpression memory (SubtractExp e1 e2) label =
     let (c1, l1) = generateExpression memory e1 label
         save1    = ["mv t0, a0"]
@@ -84,3 +84,47 @@ generateExpression memory (NotExp e) label =
     let (c, l1) = generateExpression memory e label
         op      = ["seqz a0, a0"]
     in (c ++ op, l1)
+
+generateStatement :: Map String Int -> Statement -> Int -> ([String], Int)
+generateStatement memory (AssignmentStmt var expr) label =
+    let (c, l1) = generateExpression memory expr label
+        store   = ["sw a0, " ++ show (memory Map.! var) ++ "(fp)"]
+    in (c ++ store, l1)
+
+generateStatement memory (BlockStmt stmts) label =
+    foldl
+        (\(acc, l) s ->
+            let (c, l2) = generateStatement memory s l
+            in (acc ++ c, l2)
+        )
+        ([], label)
+        stmts
+
+generateStatement memory (IfStmt cond ifBlock elseBlock) label =
+    let (condCode, l1) = generateExpression memory cond label
+        (elseLbl, l2)  = labelGenerator l1
+        (endLbl,  l3)  = labelGenerator l2
+        (ifCode,   l4) = generateStatement memory ifBlock l3
+        (elseCode, l5) = generateStatement memory elseBlock l4
+    in ( condCode
+         ++ ["beqz a0, " ++ elseLbl]
+         ++ ifCode
+         ++ ["j " ++ endLbl]
+         ++ [elseLbl ++ ":"]
+         ++ elseCode
+         ++ [endLbl ++ ":"]
+       , l5 )
+
+generateStatement memory (WhileStmt cond body) label =
+    let (startLbl, l1) = labelGenerator label
+        (endLbl,   l2) = labelGenerator l1
+        (condCode, l3) = generateExpression memory cond l2
+        (bodyCode, l4) = generateStatement memory body l3
+    in ( [startLbl ++ ":"]
+         ++ condCode
+         ++ ["beqz a0, " ++ endLbl]
+         ++ bodyCode
+         ++ ["j " ++ startLbl]
+         ++ [endLbl ++ ":"]
+       , l4 )
+
