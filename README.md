@@ -53,41 +53,81 @@ This step takes the AST produced by the parsing/syntax analysis step and uses it
 #### Code Optimization
 This step attempts to optimize the generated code. For example, if applicable, it can replace a computationally expensive multiplication operation with a less computationally expensive bitshift operation. Once again, due to the smaller scope of this project, this step was ommitted from this compiler.
 
-## Project Goals
+## Body of Write-up
+
+### Project Goals
 While the product of this project is a compiler, the primary goal of this project is to help me learn and to further my knowledge in some key areas of computer science:
 
 - Compiler design
 - Functional languages
-- Pertinent Theory of Computation topics
+- Pertinent Theory of Computation topics such as grammars and their applications, regular languages, and, to a lesser extent, the lambda calculus
 
-## Relevant Resources
-This section will include notable resources that I use, as well as resources that may be helful to anyone who is unfamiliar with this topic.
+### Implementation Details
+This section includes details related to the implementation of this compiler. It also includes details for how to run the compiler.
 
-## Sample Usage
-This section will walk through each step of a test run of the compiler.
+#### How to Run
 
-### Example Program Written in WHILE
+
+#### Tokenizer.hs
+In this file, the Token ADT and the "tokenize" function are defined. 
+
+The Token ADT works by defining all the token types that could appear in a WHILE program. For example, there is an "If" token for the "if" keyword, there is a "Semicolon" token for the semicolon (";"), and there is "Variable" token for variable names such as "x", "y", and "firstName". 
+
+The "tokenize" function works by recursively going through the source program, identifying tokens and adding them to a list of tokens as they appear. 
+
+#### Parser.hs
+
+#### CodeGenerator.hs
+
+#### Main.hs
+
+
+### Sample Usage
+This section will walk through each step of a test run of this compiler.
+
+#### Example Program Written in WHILE
 ``` 
 x = 1;
 while (x < 10) {
   x = x * 2;
 }
 ```
-### Tokenization
-The compiler tokenizes the example program as follows:
+This is the program to be compiled. Note that this is a valid WHILE program given the language’s grammar.
+
+#### Tokenization
+
+
 ```
 tokens = [
-          Variable "x", Equals, Number 1, Semicolon, -- Line 1
-          While, LeftParenthesis, Variable "x", LessThan, Number 10, RightParenthesis, LeftBrace, -- Line 2
-          Variable "x", Equals, Variable "x", MultiplicationOp, Number 2, Semicolon, -- Line 3
-          RightBrace -- Line 4
+          Variable "x", Equals, Number 1, Semicolon, // Line 1
+          While, LeftParenthesis, Variable "x", LessThan, Number 10, RightParenthesis, LeftBrace, // Line 2
+          Variable "x", Equals, Variable "x", MultiplicationOp, Number 2, Semicolon, // Line 3
+          RightBrace // Line 4
           ]
 ```
 
-### Parsing
-The result of the compiler parsing the above tokens is as follows (shown using console output for ease of viewing):
+
+After being passed into the tokenizer, the input program is tokenized into the list of tokens depicted above.
+
+#### Parsing
+
+
+The list of tokens generated in the previous step is passed into the parser, resulting in the following abstract syntax tree which represents the structure of the input program:
+
 
 ![AbstractSyntaxTree](https://github.com/user-attachments/assets/750c6ed0-09f4-4b3d-baa1-6214bf1ad6cd)
 
-### Etc.
+#### Code Generation
+
+
+<img width="232" height="596" alt="Screenshot 2025-12-07 164109" src="https://github.com/user-attachments/assets/bf6a32ce-7281-4138-892b-122e7f1c69b9" />
+
+
+The abstract syntax tree is passed into the code generator which produces the above RISC-V Assembly code in the form of a string.
+
+## Related Projects
+
+## Future Work
+
+## Citations
 
