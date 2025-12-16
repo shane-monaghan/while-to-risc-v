@@ -111,14 +111,18 @@ The Expression ADT, as the name implies, defines expressions that can occur in W
 
 The Statement ADT defines all the statements that can occur in a WHILE program. These are things such as while loops and if statements, and they are all defined in terms of some combination of strings, expressions, statements, and lists of statements.
 
-The overall structure of the parser is that there is one overarching function called parseProgram which makes calls to another function parseStatement. When called, parseStatement makes calls to functions that are in charge of parsing each type of statement (e.g., parseIf, parseWhile, etc). Generally, those functions make calls to parseExpression which makes calls to parseMath which makes calls to parseTerm and finally to parseAtom. These functions combine to create nodes, and these nodes are combined to form a tree. At its core, the parser is designed such that a large problem (the entire list of tokens from the previous step) is broken down into many different smaller problems that are easier to handle, yet combine to capture the entire structure of the entire program in an AST.
+The overall structure of the parser is that there is one overarching function called "parseProgram" which makes calls to another function "parseStatement". When called, "parseStatement" makes calls to functions that are in charge of parsing each type of statement (e.g., "parseIf", "parseWhile", etc). Generally, those functions make calls to "parseExpression", which makes calls to "parseMath", which makes calls to "parseTerm", and finally to "parseAtom". These functions combine to create nodes, and these nodes are combined to form a tree. At its core, the parser is designed such that a large problem (the entire list of tokens from the previous step) is broken down into many different smaller problems that are easier to handle, yet combine to capture the entire structure of the entire program in an AST.
 
 It is also worth mentioning that the parser throws an error if at any point the syntax of the WHILE language is violated (e.g., if there's a missing semicolon).
 
-#### CodeGenerator.hs
+#### CodeGen.hs
+Unlike the other files, no new ADTs are defined in this file, though Expression and Statement are imported. 
+
+The code generator follows the structure of the other steps in the compilation process in that the functions are designed to break the problem of generating RISC-V code into smaller and smaller chunks. First, there is the "generateProgram" function which generates some boiler plate code and also makes calls to other functions to ensure there is enough space allocated on the stack for all the variables used in the source program. From there, calls to a function "generateStatement" are made. This function has cases for generating code for each type of Statement in the Statement ADT. Then, "generateStatement" makes calls to "generateExpression" which, similarly, has cases for generating code for each type of Expression in the Expression ADT. Once these calls are complete, "generateProgram" generates the ending boiler plate code, and the entire RISC-V program is returned in string format.
 
 #### Main.hs
 
+This file is where everything is brought together. First, the user pastes their code into the sampleCode variable. Then, when the project is run, sampleCode is passed into the Tokenizer's "tokenize" function to produce a list of tokens. This list of tokens is then passed into the Parser's "parseProgram" function, and an AST is produced. The AST is then passed into CodeGen's "generateProgram" function, which generates RISC-V Assembly code in string form and prints it to the terminal. 
 
 ### Sample Usage
 This section will walk through each step of a test run of this compiler.
